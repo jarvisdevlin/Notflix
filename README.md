@@ -9,4 +9,7 @@ Run `python server.py` after installing Python packages:
 pip install requests Flask flask_cors
 ```
 ### Frontend Setup
+#### 1. Hosting
 Find a hosting provider that allows this type of content to be uploaded to their servers and host it there or selfhost it on your own computer using Cloudflare Tunnels.
+#### 2. Setup
+Edit all `http://localhost:5000` URLs in the .html files to point to your own backend site and you are good to use Notflix.

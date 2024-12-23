@@ -7,14 +7,15 @@
     <style>
         body, html { margin: 0; padding: 0; background: #1a1a1a; color: white; font-family: Arial, sans-serif; height: 100%; }
         .topbar { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #111; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
-        .back { background: #e50914; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; }
-        .title { text-align: center; flex-grow: 1; font-size: 1.5em; font-weight: bold; }
+        .back { background: #e50914; margin-right: 10px; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; }
+        .title { text-align: center; flex-grow: 1; font-size: 1.5em; font-weight: bold; margin-left: -10%; z-index: -999; }
         iframe { width: 100%; height: calc(100vh - 60px); border: none; margin-top: 60px; }
     </style>
 </head>
 <body>
     <div class="topbar">
-        <button class="back" onclick="history.back()">Back</button>
+        <button class="back" onclick="window.location.href='/'">Home</button>
+        <button class="back" onclick="history.back()">Go Back</button>
         <div class="title" id="title"></div>
     </div>
     <iframe id="player"></iframe>
@@ -25,12 +26,12 @@
             if (!id || !type || !season || !episode) return alert("Missing parameters.");
 
             try {
-                const url = type == '1' ? `http://localhost:5000/movie/${id}` : `http://localhost:5000/tv/${id}`;
+                const url = type == '1' ? `/movie/${id}` : `/tv/${id}`;
                 const res = await fetch(url);
                 const data = await res.json();
                 if (!data) return alert("Content not found.");
 
-                const title = type == '1' ? data.title : `${data.name} - S${season}E${episode}`;
+                const title = type == '1' ? `${data.title}` : `${data.name} - S${season}E${episode}`;
                 document.getElementById('title').textContent = title;
                 document.getElementById('player').src = `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}`;
             } catch (err) {

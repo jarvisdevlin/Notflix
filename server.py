@@ -1,8 +1,8 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-import requests
+import requests, os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 CORS(app)
 
 API_KEY = ''
@@ -44,6 +44,22 @@ def details(media, id):
 @app.route('/tv/<int:id>/season/<int:season>', methods=['GET'])
 def season(id, season):
     return jsonify(fetch(f'tv/{id}/season/{season}'))
+
+@app.route('/')
+def serve_index():
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/details')
+def serve_details():
+    return send_from_directory(app.static_folder, 'details.html')
+
+@app.route('/watch')
+def serve_watch():
+    return send_from_directory(app.static_folder, 'watch.html')
+
+@app.route('/logo.png')
+def serve_icon():
+    return send_from_directory(app.static_folder, 'logo.png')
 
 if __name__ == '__main__':
     app.run(debug=True)

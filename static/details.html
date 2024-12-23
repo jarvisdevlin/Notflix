@@ -6,7 +6,7 @@
     <title>Details - Notflix</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 0; background: #1a1a1a; color: white; }
-        .top-bar { display: flex; justify-content: space-between; padding: 10px; background: #111; }
+        .top { display: flex; justify-content: space-between; padding: 10px 20px; background: #111; }
         .logo { font-size: 24px; color: #e50914; }
         .back { background: #e50914; color: white; padding: 10px; cursor: pointer; border: none; border-radius: 5px; }
         .container { text-align: center; padding: 20px; }
@@ -26,9 +26,9 @@
     </style>
 </head>
 <body>
-    <div class="top-bar">
-        <div class="logo">Notflix</div>
-        <button class="back" onclick="history.back()">Back</button>
+    <div class="top">
+        <div id="logo"><img src="/logo.png" style="max-width: 128px; height: auto;"></div>
+        <button class="back" onclick="window.location.href='/'">Back</button>
     </div>
     <div class="container" id="content"></div>
     <script>
@@ -39,7 +39,7 @@
             if (!id || !type) return alert("Missing parameters.");
 
             const contentEl = document.getElementById('content');
-            const url = type === '1' ? `http://localhost:5000/movie/${id}` : `http://localhost:5000/tv/${id}`;
+            const url = type === '1' ? `/movie/${id}` : `/tv/${id}`;
 
             try {
                 const res = await fetch(url);
@@ -50,17 +50,20 @@
                 const poster = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
                 const overview = data.overview || "No description available.";
                 const rating = data.vote_average || "N/A";
+                const votes = data.vote_count || "N/A";
+                const released = data.release_date || "N/A";
+                const runtime = data.runtime || "N/A";
 
                 contentEl.innerHTML = `
                     <img src="${poster}" alt="${title}">
-                    <h1>${title}</h1>
-                    <p>${overview}</p>
-                    <div class="rating">Rating: ${rating}</div>
+                    <p><strong>Released on: ${released}</strong></p>
+                    <h1>${title} (${rating}/10&#11088; / ${votes} votes)</h1>
                     <div class="genres">${(data.genres || []).map(g => `<span>${g.name}</span>`).join('')}</div>
+                    <p>${overview}</p>
                 `;
 
                 if (type === '1') {
-                    contentEl.innerHTML += `<a class="watch" href="watch.html?id=${id}&type=1&season=0&episode=0">Watch Now</a>`;
+                    contentEl.innerHTML += `<a class="watch" href="/watch?id=${id}&type=1&season=0&episode=0">Watch Now [${runtime} minutes]</a>`;
                 } else if (data.seasons) {
                     const lol = data.seasons.filter(s => s.season_number > 0);
                     lol.forEach(season => {
@@ -78,7 +81,7 @@
 
             async function loadSeason(seasonNum) {
                 try {
-                    const res = await fetch(`http://localhost:5000/tv/${id}/season/${seasonNum}`);
+                    const res = await fetch(`/tv/${id}/season/${seasonNum}`);
                     const data = await res.json();
                     if (!data || !data.episodes) return alert("No episodes found.");
 
@@ -90,7 +93,7 @@
                             <img src="https://image.tmdb.org/t/p/w500${ep.still_path}" alt="${ep.name}">
                             <h2>${ep.name}</h2>
                             <p>${ep.overview || "No overview available."}</p>
-                            <a class="watch" href="watch.html?id=${id}&type=2&season=${seasonNum}&episode=${ep.episode_number}">Watch Now</a>
+                            <a class="watch" href="/watch?id=${id}&type=2&season=${seasonNum}&episode=${ep.episode_number}">Watch Now</a>
                         </div>
                     `).join('');
 
